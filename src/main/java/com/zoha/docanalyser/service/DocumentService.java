@@ -13,6 +13,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -82,5 +83,14 @@ public class DocumentService {
 
         // 9. Save final state
         return documentRepository.save(savedDocument);
+    }
+
+    public Document getDocument(Long id) {
+        return documentRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Document not found with id: " + id));
+    }
+
+    public List<Document> getAllDocuments() {
+        return documentRepository.findAll();
     }
 }
