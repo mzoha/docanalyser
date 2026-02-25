@@ -1,6 +1,7 @@
 package com.zoha.docanalyser.service;
 
 import com.zoha.docanalyser.model.Document;
+import com.zoha.docanalyser.model.ProcessingStatus;
 import com.zoha.docanalyser.repository.DocumentRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -21,9 +22,11 @@ public class DocumentService {
     private String uploadDir;
 
     private final DocumentRepository documentRepository;
+    private final PDFService pdfService;
 
-    public DocumentService(DocumentRepository documentRepository) {
+    public DocumentService(DocumentRepository documentRepository, PDFService pdfService) {
         this.documentRepository = documentRepository;
+        this.pdfService = pdfService;
     }
 
     public Document uploadDocument(MultipartFile file) throws IOException {
@@ -55,7 +58,29 @@ public class DocumentService {
         Document document = new Document();
         document.setFilename(originalFilename);
         document.setFilePath(filePath.toString());
-        // status defaults to UPLOADED
-        return documentRepository.save(document);
+        document.setStatus(ProcessingStatus.PROCESSING);
+
+        // Save initially to get ID
+        Document savedDocument = documentRepository.save(document);
+
+        try {
+            // 6. Extract text from PDF
+            log.info("Starting text extraction for document ID: {}", savedDocument.getId());
+            String extractedText = pdfService.extractText(filePath.toFile());
+
+            // 7. Update document with extracted text
+            savedDocument.setExtractedText(extractedText);
+            savedDocument.setStatus(ProcessingStatus.COMPLETED);
+            log.info("Text extraction completed for document ID: {}", savedDocument.getId());
+
+        } catch (IOException e) {
+            // 8. Handle extraction failure
+            log.error("Text extraction failed for document ID: {}", savedDocument.getId(), e);
+            savedDocument.setStatus(ProcessingStatus.FAILED);
+            savedDocument.setExtractedText("Error: " + e.getMessage());
+        }
+
+        // 9. Save final state
+        return documentRepository.save(savedDocument);
     }
 }

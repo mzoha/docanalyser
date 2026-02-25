@@ -27,9 +27,6 @@ public class Document {
     @Enumerated(EnumType.STRING)
     private ProcessingStatus status = ProcessingStatus.UPLOADED;
 
-    // later we'll add extracted_text, but not yet
-}
-
-enum ProcessingStatus {
-    UPLOADED, PROCESSING, COMPLETED, FAILED
+    @Column(name = "extracted_text", length = 10000)  // Increased length for longer text
+    private String extractedText;
 }
