@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Compare Documents - AI Document Analyzer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .comparison-result {
+            max-height: 600px;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            border-left: 4px solid #0d6efd;
+        }
+        .document-select {
+            min-width: 250px;
+        }
+    </style>
+</head>
+<body>
+<div class="container mt-5">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light mb-4">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="/">AI Document Analyzer</a>
+            <div class="collapse navbar-collapse">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">Upload</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/documents">Documents</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/compare">Compare</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <h1>Document Comparison</h1>
+    <p class="lead">Select two documents to compare side-by-side</p>
+
+    <div th:if="${error}" class="alert alert-danger" th:text="${error}"></div>
+
+    <div class="card mt-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Choose Documents to Compare</h4>
+        </div>
+        <div class="card-body">
+            <form th:action="@{/compare}" method="post" th:object="${comparisonRequest}">
+                <div class="row">
+                    <div class="col-md-5">
+                        <label class="form-label fw-bold">First Document:</label>
+                        <select class="form-select document-select" th:field="*{documentId1}" required>
+                            <option value="">-- Select Document --</option>
+                            <option th:each="doc : ${documents}"
+                                    th:value="${doc.id}"
+                                    th:text="${doc.filename} + ' (ID: ' + ${doc.id} + ')'">
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2 text-center">
+                        <span class="badge bg-secondary mt-4 p-2">VS</span>
+                    </div>
+
+                    <div class="col-md-5">
+                        <label class="form-label fw-bold">Second Document:</label>
+                        <select class="form-select document-select" th:field="*{documentId2}" required>
+                            <option value="">-- Select Document --</option>
+                            <option th:each="doc : ${documents}"
+                                    th:value="${doc.id}"
+                                    th:text="${doc.filename} + ' (ID: ' + ${doc.id} + ')'">
+                            </option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="row mt-4">
+                    <div class="col-12 text-center">
+                        <button type="submit" class="btn btn-primary btn-lg">Compare Documents</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Comparison Result -->
+    <div th:if="${comparisonResult}" class="card mt-5">
+        <div class="card-header bg-success text-white">
+            <h4 class="mb-0">Comparison Result</h4>
+        </div>
+        <div class="card-body">
+            <div class="comparison-result" th:text="${comparisonResult}"></div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

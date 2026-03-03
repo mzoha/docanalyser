@@ -9,6 +9,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @Slf4j
 public class AnalysisService {
@@ -50,7 +52,13 @@ public class AnalysisService {
         Analysis analysis = new Analysis(document, type, result);
         return analysisRepository.save(analysis);
     }
-    
+
+    public List<Analysis> getAllAnalysesForDocument(Long documentId) {
+        Document document = documentRepository.findById(documentId)
+                .orElseThrow(() -> new RuntimeException("Document not found: " + documentId));
+        return analysisRepository.findByDocument(document);
+    }
+
     private String performAnalysis(String text, AnalysisType type) {
         switch (type) {
             case SUMMARY:
@@ -59,6 +67,16 @@ public class AnalysisService {
                 return aiService.extractKeyPoints(text);
             case ENTITIES:
                 return aiService.extractEntities(text);
+            case DETAILED_ANALYSIS:
+                return aiService.detailedAnalysis(text);
+            case TOPICS:
+                return aiService.extractTopics(text);
+            case SENTIMENT:
+                return aiService.analyzeSentiment(text);
+            case QUESTIONS:
+                return aiService.generateQuestions(text);
+            case TARGET_AUDIENCE:
+                return aiService.analyzeTargetAudience(text);
             default:
                 throw new IllegalArgumentException("Unknown analysis type: " + type);
         }

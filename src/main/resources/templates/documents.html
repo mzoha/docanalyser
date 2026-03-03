@@ -20,6 +20,27 @@
         </tr>
         </thead>
         <tbody>
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <div class="container">
+                <a class="navbar-brand" href="/">AI Document Analyzer</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navbarNav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="/">Upload</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/documents">Documents</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="/compare">Compare</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
         <tr th:each="doc : ${documents}">
             <td th:text="${doc.id}">1</td>
             <td th:text="${doc.filename}">file.pdf</td>

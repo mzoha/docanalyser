@@ -27,6 +27,6 @@ public class Document {
     @Enumerated(EnumType.STRING)
     private ProcessingStatus status = ProcessingStatus.UPLOADED;
 
-    @Column(name = "extracted_text", length = 10000)  // Increased length for longer text
+    @Column(name = "extracted_text", columnDefinition = "TEXT")  // LOB for even longer text
     private String extractedText;
 }
